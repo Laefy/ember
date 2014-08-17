@@ -26,11 +26,10 @@ namespace Ember
 {
 
 /**
- * @brief This represent a set of idling animations. 
+ * @brief This represent a set of gestures. 
  *
- * For example, we could create a multiple sets depending on the position of the character (a standing idling set, a sitting idling set, 
- * a swiming idling set, a set for when the character is tired, etc. - of course, right now, the motions provided into SmartBody datas 
- * only able us to provide a standing idling set, possibly a agressive one too, but these are ideas for future improvements).
+ * A gesture can be a SmartBody motion, but also a head move, or a temporary pose. Every gesture that is not represented by a motion file is called Gesturing (real lack of inspiration).
+ * The main difference with other SmartBodyAnimation is that a gesture is played only once, contrarily to a posture, which will last as long as no other posture is applied.
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  */
@@ -40,6 +39,7 @@ public:
 
 	/**
 	 * @brief To represent a gesture that is not generating from a motion file.
+	 * We have to make this kind of exception because the bml requests cannot be generated automatically (concretely, we cannot use "<gesture name=motion_name />").
 	 */
 	class Gesturing
 	{
@@ -50,7 +50,7 @@ public:
 		 */
 		enum class Name
 		{
-			NOD, SHAKE, WIGGLE, WAGGLE, TOSS		//The character needs the skullbase bone to use these animations. 
+			NOD, SHAKE, WIGGLE, WAGGLE, TOSS		//The character needs the skullbase bone to use most of these animations. 
 		};
 
 		/**
@@ -76,7 +76,7 @@ public:
 	private:
 
 		/**
-		 * @brief The name of the gesture.
+		 * @brief The name of the gesturing.
 		 */
 		Name mName;
 
@@ -95,11 +95,10 @@ public:
 	/**
 	 * @brief Ctor.
 	 * @param motions: The motions that use motion files.
-	 * @param gesturing: The ones that don't.
+	 * @param gesturing: The ones that don't, under the form of Gesturing elements.
 	 * One of them must contain at least one element.
 	 */
-	SmartBodyGestureAnimation(SmartBodyAnimation::Name name, SmartBody::SBAssetManager& assetMng, const std::vector<std::string>& motions, 
-		const std::vector<Gesturing>& gesturings);
+	SmartBodyGestureAnimation(SmartBodyAnimation::Name name, SmartBody::SBAssetManager& assetMng, const std::vector<std::string>& motions, const std::vector<Gesturing>& gesturings);
 
 	/**
 	 * @brief Copy ctor.
@@ -120,7 +119,7 @@ public:
 	/**
 	 * @brief Returns the duration of the gesture.
 	 *
-	 * Overrides SmartBodyAnimation::getMotionDuration().
+	 * Overrides SmartBodyAnimation::getMotionDuration(), as the duration of a Gesturing is something that is proper to it.
 	 */
 	float getMotionDuration(int gestureIndex) const;
 
@@ -141,24 +140,16 @@ private:
 	const std::vector<std::string> mMotions;
 
 	/**
-	 * @brief The different gesture animations that can be launched during idling (can be null).
-	 * When waiting long enough, the character should be gesturing (scratching his head, crossing his arms, etc.). Here are all the
-	 * possible gestures for this idling set.
-	 * Contrarily to the postures, which continued as long as no change has been made for them, a gesture animation will be played
-	 * only once.
-	 * 
-	 * @see SmartBodyGestureAnimation.h.
+	 * @brief The Gesturings contained in this set (motions that are not generated with motion files, but only described through the bml request).
 	 */
 	const std::vector<Gesturing> mGesturings;
 
 };
 
 /**
- * @brief This bound a SmartBodyGestureAnimation to a SmartBodyRepresentation. 
+ * @brief This binds a SmartBodyGestureAnimation to a SmartBodyRepresentation. 
  *
- * For example, we could create a multiple sets depending on the position of the character (a standing idling set, a sitting idling set, 
- * a swiming idling set, a set for when the character is tired, etc. - of course, right now, the motions provided into SmartBody datas 
- * only able us to provide a standing idling set, possibly a agressive one too, but these are ideas for future improvements).
+ * It contains the index of the gesture that is to be played (-1 if none), and the time elapsed since the last gesture stops (negative if a gesture is currently being played).
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  */

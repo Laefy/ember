@@ -28,8 +28,8 @@ SmartBodyGestureAnimation::Gesturing::Gesturing(Name name, int repeat /*= 1*/, f
 {
 	std::string type;
 
-	switch (name)
-	{
+	switch (name) {
+
 		case Name::NOD:
 			type = "NOD";
 			break;
@@ -48,8 +48,8 @@ SmartBodyGestureAnimation::Gesturing::Gesturing(Name name, int repeat /*= 1*/, f
 	}
 
 	//Check that the duration is a positive value.
-	if (duration < 0)
-	{
+	if (duration < 0) {
+
 		duration = -duration;
 	}
 
@@ -89,25 +89,24 @@ SmartBodyGestureAnimation::~SmartBodyGestureAnimation()
 
 bool SmartBodyGestureAnimation::getBmlRequest(std::string& request, int gestureIndex, const std::vector<std::string>& attributes) const
 {
-	if (gestureIndex < 0 || getMotionNumber() <= gestureIndex)
-	{
+	if (gestureIndex < 0 || getMotionNumber() <= gestureIndex) {
+
 		return false;
 	}
 
-	if (gestureIndex < mMotions.size())
-	{
+	if (gestureIndex < mMotions.size()) {
+
 		request = "<gesture name=\"" + mMotions[gestureIndex] + "\"";
 
-		for (auto& attribute : attributes)
-		{
+		for (auto& attribute : attributes) {
+
 			request += attribute;
 		}
 
 		request += "/>";
-	}
 
-	else
-	{
+	} else {
+
 		request = mGesturings[gestureIndex - mMotions.size()].getBmlRequest();
 	}
 
@@ -116,18 +115,17 @@ bool SmartBodyGestureAnimation::getBmlRequest(std::string& request, int gestureI
 
 float SmartBodyGestureAnimation::getMotionDuration(int gestureIndex) const
 {
-	if (gestureIndex < 0 || !(gestureIndex < getMotionNumber()))
-	{
+	if (gestureIndex < 0 || !(gestureIndex < getMotionNumber())) {
+
 		return -1;
 	}
 
-	if (gestureIndex < mMotions.size())
-	{
-		return SmartBodyAnimation::getMotionDuration(gestureIndex);
-	}
+	if (gestureIndex < mMotions.size()) {
 
-	else
-	{
+		return SmartBodyAnimation::getMotionDuration(gestureIndex);
+
+	} else {
+
 		return mGesturings[gestureIndex - mMotions.size()].getDuration();
 	}
 }
@@ -170,8 +168,8 @@ bool SmartBodyGestureAnimationInstance::playGesture(int gestureIndex)
 {
 	float duration = dynamic_cast<const SmartBodyGestureAnimation&>(mReference).getMotionDuration(gestureIndex);
 
-	if (duration < 0)
-	{
+	if (duration < 0) {
+
 		//If something went wrong, we return false.
 		return false;
 	}

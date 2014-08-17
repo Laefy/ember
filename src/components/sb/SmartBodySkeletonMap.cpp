@@ -37,8 +37,7 @@ SmartBodySkeletonMap::SmartBodySkeletonMap(const std::string& skeleton, std::vec
 	std::ifstream mapFile(std::string(EMBER_SMARTBODY_ASSETS_MAPS + skeleton + EMBER_SMARTBODY_MAP_EXTENSION).c_str(), std::ios::in);
 	mHasMap = mapFile.is_open();
 
-	if (mHasMap)
-	{
+	if (mHasMap) {
 		mHasMap = parseMapFile(mapFile);
 		mapFile.close();
 	}
@@ -60,8 +59,7 @@ void SmartBodySkeletonMap::setMap(SmartBody::SBAssetManager& assetMng, SmartBody
 	SmartBody::SBJointMap *jointMap = mapMng.createJointMap(mName);
 
 	//Creation of the joint map.
-	for (auto& bone : mBones)
-	{
+	for (auto& bone : mBones) {
 		jointMap->setMapping(bone.first, bone.second);
 	}
 
@@ -69,10 +67,9 @@ void SmartBodySkeletonMap::setMap(SmartBody::SBAssetManager& assetMng, SmartBody
 	jointMap->applySkeleton(skeleton);
 
 	//And now to the motions.
-	if (mMotions)
-	{
-		for (auto& motionName : *mMotions)
-		{
+	if (mMotions) {
+
+		for (auto& motionName : *mMotions) {
 			SmartBody::SBMotion *motion = assetMng.getMotion(motionName);
 			jointMap->applyMotion(motion);
 		}
@@ -81,15 +78,14 @@ void SmartBodySkeletonMap::setMap(SmartBody::SBAssetManager& assetMng, SmartBody
 
 bool SmartBodySkeletonMap::parseMapFile(std::ifstream& mapFile)
 {
-	while (!mapFile.eof())
-	{
+	while (!mapFile.eof()) {
+		
 		std::string line;
 		mapFile >> line;
 
 		//The delimiter between the two names is the arrow '->'.
 		size_t delim = line.find("->");
-		if (delim == 0 || delim + 1 > line.size() || delim == std::string::npos)
-		{
+		if (delim == 0 || delim + 1 > line.size() || delim == std::string::npos) {
 			return false;
 		}
 

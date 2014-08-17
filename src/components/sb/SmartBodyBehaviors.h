@@ -28,7 +28,6 @@ namespace SmartBody
 
 class SBCharacter;
 class SBAssetManager;
-class SBAnimationBlendManager;
 class SBRetargetManager;
 class SBMotion;
 class SBJointMapManager;
@@ -41,9 +40,9 @@ namespace Ember
 /**
  * @brief A behavior set is a group of motions.
  *
- * To load a behavior set, you have to create a SmartBodyBehaviors object, then use setup(). In order to use these animations on another character.
- * use retarget() on its skeleton.
- *
+ * To load a behavior set, you have to create a SmartBodyBehaviors object, then use setup(). In order to use these animations on other characters, use retarget() on their skeleton.
+ * Setting up a behavior set allows to load all the motions that it contains, but also, it enables some functionalities in SmartBody that helps to manipulate the motions in a more optimized way (for
+ * example, using gesture maps instead of <gesture name=motion_name/> bml requests).
  * This class is abstract. Right now, only SmartBodyLocomotion and SmartBodyGestures derived from it. 
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
@@ -56,8 +55,7 @@ public:
 	/**
 	 * @brief Ctor.
 	 */
-	SmartBodyBehaviors(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng,
-		SmartBody::SBAnimationBlendManager& blendMng, SmartBody::SBRetargetManager& retargetMng);
+	SmartBodyBehaviors(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng, SmartBody::SBRetargetManager& retargetMng);
 
 	/**
 	 * @brief Dtor.
@@ -70,12 +68,13 @@ public:
 	virtual bool setup(SmartBody::SBJointMapManager& jointMapManager) = 0;
 
 	/**
-	 * @brief Retarget the behavior set from the skeleton reference to another character (setup must have been called first).
+	 * @brief Retarget the behavior set from the skeleton reference to another skeleton (setup() must have been called first).
 	 */
 	void retarget(const std::string& skName);
 
 	/**
-	 * @brief If necessary, add some contraints on the character to enable the retargeting.
+	 * @brief Does everything necessary to be able to use the behavior set on another character. 
+	 * retarget() must have been called with the skeleton of the character first.
 	 */
 	virtual void applyRetargeting(SmartBody::SBCharacter& character) = 0;
 
@@ -88,35 +87,20 @@ protected:
 	std::string mSkelRefName;
 
 	/**
-	 * @brief Reference to the asset manager.
+	 * @brief Reference to the asset manager (to be able to load the motions and check their existence).
 	 */
 	SmartBody::SBAssetManager& mAssetManager;
 
 	/**
-	 * @brief Reference to the animation blend manager.
-	 */
-	SmartBody::SBAnimationBlendManager& mBlendManager;
-
-	/**
-	 * @brief Reference to the retarget manager.
-	 */
-	SmartBody::SBRetargetManager& mRetargetManager;
-
-	/**
-	 * @brief Stating that setup has been effectuated.
-	 */
-	bool mSetup;
-
-
-	/**
-	 * @brief Checks that the assets have been correctly loaded and map the skeleton reference.
+	 * @brief If possible, maps the names of the bones in the skeleton reference to the names of the SmartBody joints.
+	 * @return false if the assets have not been loaded correctly, true otherwise.
 	 */
 	bool setupAssets(SmartBody::SBJointMapManager& jointMapMng);
 
 	/**
-	 * @brief Sets up the behaviors.
+	 * @brief Checks that each asset has been correctly loaded (skeleton + motions).
 	 */
-	void setupBehaviors();
+	bool assetsExist();
 
 	/**
 	 * @brief Gets all the motions constituing this behavior set.
@@ -124,9 +108,19 @@ protected:
 	virtual std::vector<std::string> getMotions() = 0;
 
 	/**
-	 * @brief Checks that each asset has been correctly loaded (skeleton + motions).
+	 * @brief Stating that the behavior was set up successfully.
 	 */
-	bool assetsExist();
+	bool mSetup;
+
+	/**
+	 * @brief Sets up the behaviors, by specifying for each motion the skeleton it is used with.
+	 */
+	void setupBehaviors();
+
+	/**
+	 * @brief Reference to the retarget manager (to create SBRetarget instances).
+	 */
+	SmartBody::SBRetargetManager& mRetargetManager;
 };
 
 }

@@ -32,9 +32,8 @@ using namespace Ember;
 namespace Ember
 {
 
-SmartBodyLocomotion::SmartBodyLocomotion(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng,
-		SmartBody::SBAnimationBlendManager& blendMng, SmartBody::SBRetargetManager& retargetMng)
-	: SmartBodyBehaviors::SmartBodyBehaviors(motionPath, skeletonRef, assetMng, blendMng, retargetMng)
+SmartBodyLocomotion::SmartBodyLocomotion(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng, SmartBody::SBAnimationBlendManager& blendMng, SmartBody::SBRetargetManager& retargetMng)
+: SmartBodyBehaviors::SmartBodyBehaviors(motionPath, skeletonRef, assetMng, retargetMng), mBlendManager(blendMng)
 {
 }
 
@@ -45,13 +44,13 @@ SmartBodyLocomotion::~SmartBodyLocomotion()
 
 bool SmartBodyLocomotion::setup(SmartBody::SBJointMapManager& jointMapManager)
 {
-	if (mSetup)
-	{
+	if (mSetup) {
+
 		return true;
 	}
 	
-	if (SmartBodyBehaviors::setupAssets(jointMapManager))
-	{
+	if (SmartBodyBehaviors::setupAssets(jointMapManager)) {
+
 		SmartBodyBehaviors::setupBehaviors();
 
 		locomotionSetup();
@@ -68,7 +67,6 @@ bool SmartBodyLocomotion::setup(SmartBody::SBJointMapManager& jointMapManager)
 
 void SmartBodyLocomotion::applyRetargeting(SmartBody::SBCharacter& character)
 {
-	
 }
 
 
@@ -145,8 +143,8 @@ std::vector<std::string> SmartBodyLocomotion::getMotionsForLocomotionSetup()
 void SmartBodyLocomotion::locomotionSetup()
 {	
 	//If the blend is already existing, we don't need to do anything. 
-	if (mBlendManager.getBlend("allLocomotion") != nullptr)
-	{
+	if (mBlendManager.getBlend("allLocomotion") != nullptr) {
+	
 		return;
 	}
 
@@ -159,8 +157,8 @@ void SmartBodyLocomotion::locomotionSetup()
 	size_t size = motions.size();
 
 	//We add these motions to our blend.
-	for (auto& motionName : motions)
-	{
+	for (auto& motionName : motions) {
+
 		blend->addMotion(motionName, 0, 0, 0);
 	}
 
@@ -189,12 +187,12 @@ void SmartBodyLocomotion::locomotionSetup()
 		};
 
 	//We add the correspondence points to the blend.
-	for (size_t i = 0; i < 4; i ++)
-	{
+	for (size_t i = 0; i < 4; i ++) {
+
 		std::vector<double> points;
 
-		for (size_t j = 0; j < size; j ++)
-		{
+		for (size_t j = 0; j < size; j ++) {
+
 			points.push_back(correspondencePoints[j * 4 + i]);
 		}
 
@@ -210,8 +208,8 @@ void SmartBodyLocomotion::locomotionSetup()
 	std::vector<double> points;
 	float speed, omega, direction;
 
-	for (size_t i = 0; i < size; i ++)
-	{
+	for (size_t i = 0; i < size; i ++) {
+
 		motion = mAssetManager.getMotion(motions[i]);
 		motion->connect(skeleton);
 
@@ -315,23 +313,23 @@ void SmartBodyLocomotion::startingSetup()
 		points[2].push_back(1.6);
 
 	//Sets the blend manager for each side.
-	for (size_t i = 0; i < 2; i ++)
-	{
-		if (mBlendManager.getBlend(blendNames[i]) != 0)
-		{
+	for (size_t i = 0; i < 2; i ++) {
+
+		if (mBlendManager.getBlend(blendNames[i]) != 0) {
+
 			continue;
 		}
 
 		SmartBody::SBAnimationBlend1D *blend = mBlendManager.createBlend1D(blendNames[i]);
 		blend->setBlendSkeleton(mSkelRefName);
 
-		for (size_t j = 0; j < 3; j ++)
-		{
+		for (size_t j = 0; j < 3; j ++) {
+
 			blend->addMotion(motions[i][j], params[i][j]);
 		}
 
-		for (size_t j = 0; j < 3; j ++)
-		{
+		for (size_t j = 0; j < 3; j ++) {
+
 			blend->addCorrespondencePoints(motions[i], points[j]);
 		}
 	}
@@ -339,8 +337,8 @@ void SmartBodyLocomotion::startingSetup()
 
 void SmartBodyLocomotion::idleTurnSetup()
 {	
-	if (mBlendManager.getBlend("allIdleTurn") != 0)
-	{
+	if (mBlendManager.getBlend("allIdleTurn") != 0) {
+
 		return;
 	}
 
@@ -355,8 +353,8 @@ void SmartBodyLocomotion::idleTurnSetup()
 		
 	double params[] = {0, -90, -180, 90, 180};
 
-	for (int i = 0; i < 5; i ++)
-	{
+	for (int i = 0; i < 5; i ++) {
+
 		blend->addMotion(motions[i], params[i]);
 	}
 
@@ -377,16 +375,16 @@ void SmartBodyLocomotion::idleTurnSetup()
 		points[2].push_back(1.96667);
 		points[2].push_back(2.46667);
 
-	for (int i = 0; i < 3; i ++)
-	{
+	for (int i = 0; i < 3; i ++) {
+
 		blend->addCorrespondencePoints(motions, points[i]);
 	}
 }
 
 void SmartBodyLocomotion::stepSetup()
 {
-	if (mBlendManager.getBlend("allStep") != 0)
-	{
+	if (mBlendManager.getBlend("allStep") != 0) {
+
 		return;
 	}
 
@@ -402,8 +400,8 @@ void SmartBodyLocomotion::stepSetup()
 	motions.push_back("ChrUtah_Idle01_StepForwardLf01");
 	motions.push_back("ChrUtah_Idle01_StepSidewaysLf01");
 	
-	for (auto& motionName : motions)
-	{
+	for (auto& motionName : motions) {
+
 		blend->addMotion(motionName, 0, 0);
 	}
 
@@ -430,8 +428,8 @@ void SmartBodyLocomotion::stepSetup()
 		points[2].push_back(1.33333);
 		points[2].push_back(1.33103);
 
-	for (int i = 0; i < 3; i ++)
-	{
+	for (int i = 0; i < 3; i ++) {
+		
 		blend->addCorrespondencePoints(motions, points[i]);
 	}
 
@@ -442,8 +440,8 @@ void SmartBodyLocomotion::stepSetup()
 	std::vector<double> pts;
 	std::vector<float> transition;
 
-	for (int i = 0; i < 7; i ++)
-	{
+	for (int i = 0; i < 7; i ++) {
+
 		motion = mAssetManager.getMotion(motions[i]);
 		motion->connect(skeleton);
 
@@ -463,15 +461,15 @@ void SmartBodyLocomotion::stepSetup()
 
 void SmartBodyLocomotion::transitionSetup()
 {	
-	if (mBlendManager.getTransition("allStartingLeft", "allLocomotion") == 0)
-	{
+	if (mBlendManager.getTransition("allStartingLeft", "allLocomotion") == 0) {
+
 		SmartBody::SBAnimationTransition *transition = mBlendManager.createTransition("allStartingLeft", "allLocomotion");
 		transition->setEaseInInterval("ChrUtah_Meander01", 0.4, 0.78);
 		transition->addEaseOutInterval("ChrUtah_StopToWalkLf01", 0.54, 0.83);
 	}
 
-	if (mBlendManager.getTransition("allStartingRight", "allLocomotion") == 0)
-	{
+	if (mBlendManager.getTransition("allStartingRight", "allLocomotion") == 0) {
+		
 		SmartBody::SBAnimationTransition *transition = mBlendManager.createTransition("allStartingRight", "allLocomotion");
 		transition->setEaseInInterval("ChrUtah_Meander01", 1.1, 1.5);
 		transition->addEaseOutInterval("ChrUtah_StopToWalkRt01", 0.54, 0.83);

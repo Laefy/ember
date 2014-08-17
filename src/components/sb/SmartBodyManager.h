@@ -47,13 +47,11 @@ class SmartBodyRepresentation;
 class SmartBodyAnimationManager;
 
 /**
- @brief This class is here to set up the SmartBody library.
-
- Its main function is to bound the Ogre skeletons to SmartBody's ones, in order to animate the humanoid characters like real persons. Every call to
- SmartBody has to be done threw this class.
-
- @author Céline NOEL <celine.noel.7294@gmail.com>
-
+ * @brief This class is here to set up the SmartBody library.
+ *
+ * Its main function is to bound the Ogre skeletons to SmartBody's ones, in order to animate the humanoid characters like real persons. Every call to SmartBody has to be done threw this class.
+ *
+ * @author Céline NOEL <celine.noel.7294@gmail.com>
  */
 class SmartBodyManager
 {

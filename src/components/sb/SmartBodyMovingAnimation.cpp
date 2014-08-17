@@ -28,8 +28,8 @@ namespace Ember
 bool SmartBodyMovingAnimation::isMotionLoopOver(Direction direction, const Ogre::Vector3& translation)
 {
 	//The z-axis concern the forward/backward displacements, whereas the x-axis is for the left/right movements.
-	switch (direction)
-	{
+	switch (direction) {
+
 		case SmartBodyMovingAnimation::Direction::FORWARD:
 			return (translation.z < 0) ? true : false;
 
@@ -69,8 +69,7 @@ void SmartBodyMovingAnimation::getBmlRequest(std::string& request, Direction dir
 	//Moving animations always alter the posture attribute in the body element.
 	request = "<body posture=\"" + mMotions[(int)direction] + "\"";
 
-	for (auto& attribute : attributes)
-	{
+	for (auto& attribute : attributes) {
 		request += attribute;
 	}
 
@@ -79,8 +78,7 @@ void SmartBodyMovingAnimation::getBmlRequest(std::string& request, Direction dir
 
 bool SmartBodyMovingAnimation::getBmlRequest(std::string& request, int direction /*= (int)Direction::FORWARD*/, const std::vector<std::string>& attributes /*= std::vector<std::string>(0)*/) const
 {
-	if (direction < 0 || !(direction < getMotionNumber()))
-	{
+	if (direction < 0 || !(direction < getMotionNumber())) {
 		return false;
 	}
 

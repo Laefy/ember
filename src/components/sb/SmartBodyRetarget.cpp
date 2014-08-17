@@ -34,8 +34,7 @@ SmartBodyRetarget::SmartBodyRetarget(const std::string& srcSkName, const std::st
 	SmartBody::SBRetarget *retarget = manager.getRetarget(srcSkName, tgtSkName);
 
 	//If retarget is NULL, then the instance has never been set and we must create it.
-	if (!retarget)
-	{
+	if (!retarget) {
 		createInstance(srcSkName, tgtSkName, manager);
 	}
 }
@@ -48,6 +47,10 @@ SmartBodyRetarget::~SmartBodyRetarget()
 
 void SmartBodyRetarget::createInstance(const std::string& srcSk, const std::string& tgtSk, SmartBody::SBRetargetManager& manager)
 {
+	//During the retargeting process, there is an alignment of the skeleton on which we want to retarget the motions.
+	//The end joints correspond to the bones we should ignore during the whole retargeting (the extremities of the body), and the relative joints are the ones skipped only during the alignment process
+	//(the torso bones).
+
 	//Sets the end joints.
 	std::vector<std::string> endJoints;
 	endJoints.push_back("l_ankle");

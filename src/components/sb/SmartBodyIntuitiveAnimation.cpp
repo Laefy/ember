@@ -25,8 +25,8 @@ namespace Ember
 
 int SmartBodyIntuitiveAnimation::getBlendDimension(Blend blend)
 {
-	switch (blend)
-	{
+	switch (blend) {
+
 		case Blend::LOCOMOTION:
 			return 3;
 
@@ -71,15 +71,15 @@ SmartBodyIntuitiveAnimation::~SmartBodyIntuitiveAnimation()
 
 bool SmartBodyIntuitiveAnimation::getBmlRequest(std::string& request, Blend blend, const std::vector<std::string>& parameters) const
 {
-	if (!areParametersValid(blend, parameters))
-	{
+	if (!areParametersValid(blend, parameters)) {
+
 		return false;
 	}
 
 	request = "<blend name=\"" + mBlends[(int)blend] + "\"";
 
-	for (auto& parameter : parameters)
-	{
+	for (auto& parameter : parameters) {
+
 		request += parameter;
 	}
 	
@@ -90,8 +90,8 @@ bool SmartBodyIntuitiveAnimation::getBmlRequest(std::string& request, Blend blen
 
 bool SmartBodyIntuitiveAnimation::getBmlRequest(std::string& request, int blendNumber, const std::vector<std::string>& parameters) const
 {
-	if (blendNumber < 0 || !(blendNumber < (int)Blend::BLENDS_COUNT))
-	{
+	if (blendNumber < 0 || !(blendNumber < (int)Blend::BLENDS_COUNT)) {
+
 		return false;
 	}
 
@@ -112,16 +112,16 @@ bool SmartBodyIntuitiveAnimationInstance::getBmlRequest(std::string& request) co
 {
 	std::vector<std::string> parameters;
 	
-	if (mNbParameters > 0)
-	{
+	if (mNbParameters > 0) {
+
 		parameters.push_back(" x=\"" + std::to_string(mX) + "\" ");
 
-		if (mNbParameters > 1)
-		{
+		if (mNbParameters > 1) {
+
 			parameters.push_back(" y=\"" + std::to_string(mY) + "\" ");
 
-			if (mNbParameters > 2)
-			{
+			if (mNbParameters > 2) {
+
 				parameters.push_back(" z=\"" + std::to_string(mZ) + "\" ");
 			}
 		}
@@ -169,8 +169,8 @@ void SmartBodyIntuitiveAnimationInstance::setServerPositionAndOrientation(const 
 
 void SmartBodyIntuitiveAnimationInstance::calculateBlendParameters(float timeSlice)
 {
-	switch (mBlend)
-	{
+	switch (mBlend) {
+		
 		case SmartBodyIntuitiveAnimation::Blend::LOCOMOTION:
 			calculateSpeedAngularSpeedAndDirectionParameters(timeSlice);
 			break;

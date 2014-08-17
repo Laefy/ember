@@ -32,9 +32,8 @@ using namespace Ember;
 namespace Ember
 {
 
-SmartBodyBehaviors::SmartBodyBehaviors(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng,
-		SmartBody::SBAnimationBlendManager& blendMng, SmartBody::SBRetargetManager& retargetMng)
-: 	mSkelRefName(skeletonRef), mAssetManager(assetMng), mBlendManager(blendMng), mRetargetManager(retargetMng), mSetup(false)
+SmartBodyBehaviors::SmartBodyBehaviors(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng, SmartBody::SBRetargetManager& retargetMng)
+: 	mSkelRefName(skeletonRef), mAssetManager(assetMng), mRetargetManager(retargetMng), mSetup(false)
 {
 	//Loads the assets.
 	mAssetManager.loadAssetsFromPath(motionPath);	
@@ -42,20 +41,19 @@ SmartBodyBehaviors::SmartBodyBehaviors(const std::string& motionPath, const std:
 
 SmartBodyBehaviors::~SmartBodyBehaviors()
 {
-
 }
 
 
 bool SmartBodyBehaviors::setupAssets(SmartBody::SBJointMapManager& jointMapMng)
 {
-	if (assetsExist())
-	{
+	if (assetsExist()) {
+
 		std::vector<std::string> motions = getMotions();
 
 		//Try to get the skeleton map.
 		SmartBodySkeletonMap map(mSkelRefName, &motions);
-		if (map.exists())
-		{
+		if (map.exists()) {
+
 			//Finally, map the skeleton and the motions.
 			map.setMap(mAssetManager, jointMapMng);
 		}
@@ -66,6 +64,28 @@ bool SmartBodyBehaviors::setupAssets(SmartBody::SBJointMapManager& jointMapMng)
 	return false;
 }
 
+bool SmartBodyBehaviors::assetsExist()
+{
+	if (!mAssetManager.getSkeleton(mSkelRefName)) {
+
+		//std::cout << "Error : " + mSkelRefName + " does not exists." << std::endl;
+		return false;
+	}
+
+	std::vector<std::string> motions = getMotions();
+	for (auto& motionName : motions) {
+
+		SmartBody::SBMotion *motion = mAssetManager.getMotion(motionName);
+
+		if (!motion) {
+			
+			//std::cout << "Error : " + motions[i] + " does not exists." << std::endl;
+			return false;
+		}
+	}
+
+	return true;		
+}
 
 void SmartBodyBehaviors::setupBehaviors()
 {
@@ -73,34 +93,11 @@ void SmartBodyBehaviors::setupBehaviors()
 	std::vector<std::string> motions = getMotions();
 
 	//For each motion, we need to set the skeleton and to configurate some of the motion parameters. 
-	for (auto& motionName : motions)
-	{
+	for (auto& motionName : motions) {
+
 		SmartBody::SBMotion *motion = mAssetManager.getMotion(motionName);
 		motion->setMotionSkeletonName(mSkelRefName);
 	}	
-}
-
-bool SmartBodyBehaviors::assetsExist()
-{
-	if (!mAssetManager.getSkeleton(mSkelRefName))
-	{
-		//std::cout << "Error : " + mSkelRefName + " does not exists." << std::endl;
-		return false;
-	}
-
-	std::vector<std::string> motions = getMotions();
-	for (auto& motionName : motions)
-	{
-		SmartBody::SBMotion *motion = mAssetManager.getMotion(motionName);
-
-		if (!motion)
-		{
-			//std::cout << "Error : " + motions[i] + " does not exists." << std::endl;
-			return false;
-		}
-	}
-
-	return true;		
 }
 
 void SmartBodyBehaviors::retarget(const std::string& skName)

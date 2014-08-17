@@ -27,29 +27,25 @@ using namespace Ember;
 namespace Ember
 {
 
-SmartBodyGestures::SmartBodyGestures(const std::string& motionPath, const std::string& skeletonRef, 
-		SmartBody::SBAssetManager& assetMng, SmartBody::SBAnimationBlendManager& blendMng, SmartBody::SBRetargetManager& retargetMng, 
-		SmartBody::SBGestureMapManager& gestureMapMng)
-: 	SmartBodyBehaviors::SmartBodyBehaviors(motionPath, skeletonRef, assetMng, blendMng, retargetMng), 
-	mGestureMapMng(gestureMapMng)
+SmartBodyGestures::SmartBodyGestures(const std::string& motionPath, const std::string& skeletonRef, SmartBody::SBAssetManager& assetMng, SmartBody::SBRetargetManager& retargetMng, SmartBody::SBGestureMapManager& gestureMapMng)
+: 	SmartBodyBehaviors::SmartBodyBehaviors(motionPath, skeletonRef, assetMng, retargetMng), mGestureMapMng(gestureMapMng)
 {
 }
 
 SmartBodyGestures::~SmartBodyGestures()
 {
-
 }
 
 
 bool SmartBodyGestures::setup(SmartBody::SBJointMapManager& jointMapManager)
 {
-	if (mSetup)
-	{
+	if (mSetup) {
+
 		return true;
 	}
 	
-	if (SmartBodyBehaviors::setupAssets(jointMapManager))
-	{
+	if (SmartBodyBehaviors::setupAssets(jointMapManager)) {
+		
 		SmartBodyBehaviors::setupBehaviors();
 
 		mapNeutralGestures();

@@ -36,10 +36,10 @@ namespace Ember
 /**
  * @brief This class is used to represent an animation: each of them is identified by a name, and is composed of several motions.
  * 
- * An SmartBodyAnimation should not be created directly. It is better to instantiate SmartBodyStaticAnimation, SmartBodyMovingAnimation
- * and SmartBodyGestureAnimation. Moreover, the manipulation of this object should be handled by the SmartBodyAnimationManager. 
- * For each motion that compose an animation, there is a corresponding bml request that the SmartBodyAnimationManager retrieve when a
- * character is animated, and then send to SmartBody with the bml processor.
+ * An SmartBodyAnimation should not be created directly. It is better to instantiate SmartBodyStaticAnimation, SmartBodyMovingAnimation, SmartBodyIntuitiveAnimation and SmartBodyGestureAnimation. 
+ * In addition, the manipulation of this object should be handled by the SmartBodyAnimationManager. For each motion that composes an animation, there is a corresponding bml request that can be executed, 
+ * using the bml processor. A SmartBodyAnimation is a global object, each of them represent the concept of the animation. To bound a SmartBodyAnimation to a character, in order to say, right now, the 
+ * character is animated with motions from this animation state, you need to create a SmartBodyAnimationInstance, which will refer to the SmartBodyAnimation.
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  *
@@ -72,7 +72,7 @@ public:
 	};
 
 	/**
-	 * @brief Gets what type of class has to be created for the given animation.
+	 * @brief Gets what type of class has to be created for the given animations.
 	 */
 	static Type getType(Name animationName);
 
@@ -88,12 +88,13 @@ public:
 	virtual ~SmartBodyAnimation();
 
 	/**
-	 * @brief Returns the name for this animation.
+	 * @brief Returns the name of the animation.
 	 */
 	SmartBodyAnimation::Name getName() const;
 
 	/**
 	 * @brief Gets the request that is to be sent to the bml processor.
+	 *
 	 * @param attributes: the different attributes that will be appended to the request ("start", "ready", "x", "y", "z", etc.).
 	 * @return false if the given index is invalid.
 	 */
@@ -135,15 +136,13 @@ protected:
 
 
 /**
- * @brief In instance for a SmartBodyAnimation.
+ * @brief An instance for a SmartBodyAnimation.
  *
- * Whereas a SmartBodyAnimation is used to describe an animation in general, this class is used into SmartBodyRepresentation to 
- * bound it to an animation. Everytime we want to animate a character with SmartBody, an object from this class has to be created by the 
- * SmartBodyAnimationManager and attributed to the character.
- * 
- * In the same way as SmartBodyAnimation, SmartBodyAnimationInstance should be instantiated through children classes (MovindAnimationInstance,
- * StaticAnimationInstance, GestureAnimationInstance). Each of them contains details about how the animation is being played on the 
- * representation they are linked to.
+ * Whereas a SmartBodyAnimation is used to describe an animation in general, this class is used into SmartBodyRepresentation to bound it to an animation. Everytime we want to animate a character with 
+ * SmartBody, an object from this class has to be created by the SmartBodyAnimationManager and attributed to the character.
+ * In the same way as SmartBodyAnimation, SmartBodyAnimationInstance should be instantiated through children classes (MovindAnimationInstance, IntuitiveAnimationInstance, StaticAnimationInstance, 
+ * GestureAnimationInstance). Each of them contains information about how the animation is being played on the representation it is linked to.
+ * The execute method allow you to animate the character with the motion attended and parameterized by this instance. 
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  */
@@ -161,10 +160,10 @@ public:
 	 */
 	virtual ~SmartBodyAnimationInstance();
 
-	/**
-	 * @brief Returns the bml request to execute the current motion of this instance.
+	/** 
+	 * @brief Returns a const reference over the corresponding SmartBodyAnimation.
 	 */
-	virtual bool getBmlRequest(std::string& request) const = 0;
+	const SmartBodyAnimation& getReference() const;
 
 	/**
 	 * @brief Returns the number of motions constituing mReference.
@@ -172,24 +171,19 @@ public:
 	int getMotionNumber() const;
 
 	/** 
-	 * @brief Specify the time necessary to move from the previous animation to the new one.
+	 * @brief Specify the time to wait before beginning the new motion.
 	 * @param specify: set to false if the animation should start as soon as the previous one is finished, to true if you want to specify it yourself.
 	 */
 	void specifyStartTime(bool specify, float time = 0.0f);
 
 	/** 
-	 * @brief Specify the time necessary to move from the previous animation to the new one (you need to also specify the start time).
+	 * @brief Specify the time necessary to move from the previous animation to the new one (the start time has to be specified too, or the behaviour could not be the one expected).
 	 * @param specify: set to false if the duration of the blend should be handled by SmartBody, to true if you want to specify it yourself.
 	 */
 	void specifyReadyTime(bool specify, float time = 0.0f);
 
-	/** 
-	 * @brief Returns a const reference over the corresponding SmartBodyAnimation.
-	 */
-	const SmartBodyAnimation& getReference() const;
-
 	/**
-	 * @brief Sends the bml request to SmartBody.
+	 * @brief Sends the bml request to SmartBody, that will play the active motion with the specified parameters.
 	 */
 	void execute(const std::string& characterName);
 
@@ -207,14 +201,9 @@ protected:
 	SmartBody::SBBmlProcessor& mBmlProcessor;
 
 	/**
-	 * @brief The name of the character this animation is bound to.
+	 * @brief The name of the character this animation instance is bound to.
 	 */
-	std::string mCharacter;
-
-	/** 
-	 * @brief The identifier of the last request sent (can be useful if you need to interrupt it).
-	 */
-	std::string mLastRequestId;
+	std::string mCharacter;	
 
 	/**
 	 * @brief The time when the animation starts.
@@ -227,7 +216,7 @@ protected:
 	bool mHasStartTime;
 
 	/**
-	 * @brief The time when the animation is fully blended.
+	 * @brief The time taken by the animation to be fully blended.
 	 */
 	float mReadyTime;
 
@@ -236,11 +225,20 @@ protected:
 	 */
 	float mHasReadyTime;
 
-
 	/**
 	 * @brief Gets the bml request parts corresponding to start and ready attributes.
 	 */
 	void convertTimesToBmlStrings(std::vector<std::string>& times) const;
+
+	/**
+	 * @brief Returns the bml request corresponding to this instance.
+	 */
+	virtual bool getBmlRequest(std::string& request) const = 0;
+
+	/** 
+	 * @brief The identifier of the last request sent (can be useful if you need to interrupt it).
+	 */
+	std::string mLastRequestId;
 
 	/**
 	 * @brief Called just after a bml request has been sent, in order to reinitialize some values (mHasStartTime, mHasReadyTime).

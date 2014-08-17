@@ -41,8 +41,8 @@ SmartBodyAnimationManager::SmartBodyAnimationManager(SmartBody::SBBmlProcessor& 
 
 SmartBodyAnimationManager::~SmartBodyAnimationManager()
 {
-	for (auto& animation : mAnimations)
-	{
+	for (auto& animation : mAnimations) {
+
 		delete animation.second;
 	}
 }
@@ -97,8 +97,8 @@ void SmartBodyAnimationManager::initialize(SmartBody::SBAssetManager& assetManag
 void SmartBodyAnimationManager::addAnimation(SmartBodyAnimation::Name name, SmartBodyRepresentation& character)
 {
 	//We must find what kind of animation we are looking at.
-	switch (SmartBodyAnimation::getType(name))
-	{
+	switch (SmartBodyAnimation::getType(name)) {
+
 		case SmartBodyAnimation::Type::STATIC:
 			addStaticAnimation(name, character);
 			break;
@@ -150,8 +150,8 @@ void SmartBodyAnimationManager::addIntuitiveAnimation(SmartBodyAnimation::Name n
 {
 	SmartBodyAnimationInstance *animation = character.getPosture();
 
-	if (!animation || animation->getReference().getName() != name)
-	{
+	if (!animation || animation->getReference().getName() != name) {
+
 		freePosture(character);
 
 		SmartBodyIntuitiveAnimationInstance *animation = new SmartBodyIntuitiveAnimationInstance(dynamic_cast<SmartBodyIntuitiveAnimation&>(*mAnimations[name]), mBmlProcessor, character.getName(), SmartBodyIntuitiveAnimation::Blend::STARTING_RIGHT);
@@ -169,8 +169,8 @@ void SmartBodyAnimationManager::addGestureAnimation(SmartBodyAnimation::Name nam
 
 void SmartBodyAnimationManager::updateAnimations(SmartBodyRepresentation& character, float timeSlice)
 {
-	switch (SmartBodyAnimation::getType(character.getPosture()->getReference().getName()))
-	{
+	switch (SmartBodyAnimation::getType(character.getPosture()->getReference().getName())) {
+
 		case SmartBodyAnimation::Type::MOVING:
 			updateMovingAnimation(character);
 			break;
@@ -195,8 +195,8 @@ void SmartBodyAnimationManager::updateMovingAnimation(SmartBodyRepresentation& c
 {
 	SmartBodyMovingAnimationInstance& animation = dynamic_cast<SmartBodyMovingAnimationInstance&>(*character.getPosture());
 
-	if (animation.hasDirectionChanged())
-	{
+	if (animation.hasDirectionChanged()) {
+
 		//Send the update to SmartBody.
 		animation.execute(character.getName());
 	}
@@ -218,12 +218,13 @@ void SmartBodyAnimationManager::updateStaticAnimation(SmartBodyRepresentation& c
 	SmartBodyStaticAnimationInstance& animation = dynamic_cast<SmartBodyStaticAnimationInstance&>(*character.getPosture());
 	animation.updateTimers(timeSlice);
 
-	if (animation.getTimeSincePostureChange() > MIN_TIME_BEFORE_STATIC_POSE_CHANGE)
-	{
+	if (animation.getTimeSincePostureChange() > MIN_TIME_BEFORE_STATIC_POSE_CHANGE) {
+
+		//Pick up a number between 0 and RANDOM_STATIC_POSE_CHANGE, if it equals 0, then, we change the posture.
 	    std::uniform_int_distribution<int> range(0, RANDOM_STATIC_POSE_CHANGE - 1);
 	 	
-	 	if (range(mRandGen) == 0)
-	 	{			
+	 	if (range(mRandGen) == 0) {		
+
 	 		//Change the posture.
 	 		std::uniform_int_distribution<int> postureRange(0, animation.getMotionNumber() - 1);
 	 		animation.changePosture(postureRange(mRandGen));
@@ -233,12 +234,13 @@ void SmartBodyAnimationManager::updateStaticAnimation(SmartBodyRepresentation& c
 	 	}
 	}
 
-	if (animation.getTimeSinceGestureEnd() > MIN_TIME_BEFORE_NEW_GESTURE_PLAYED)
-	{
+	if (animation.getTimeSinceGestureEnd() > MIN_TIME_BEFORE_NEW_GESTURE_PLAYED) {
+
+		//Pick up a number between 0 and MIN_TIME_BEFORE_NEW_GESTURE_PLAYED, if it equals 0, then, we launch a new gesture.
 		std::uniform_int_distribution<int> range(0, RANDOM_STATIC_GESTURE_PLAY - 1);
 
-		if (range(mRandGen) == 0)
-		{
+		if (range(mRandGen) == 0) {
+			
 			//Play a new gesture.
 			std::uniform_int_distribution<int> gestRange(0, animation.getGestureMotionNumber() - 1);
 			animation.playGesture(gestRange(mRandGen));

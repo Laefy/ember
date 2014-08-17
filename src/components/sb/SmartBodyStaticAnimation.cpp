@@ -41,15 +41,13 @@ SmartBodyStaticAnimation::~SmartBodyStaticAnimation()
 
 bool SmartBodyStaticAnimation::getBmlRequest(std::string& request, int postureIndex, const std::vector<std::string>& attributes) const
 {
-	if (postureIndex < 0 || !(postureIndex < getMotionNumber()))
-	{
+	if (postureIndex < 0 || !(postureIndex < getMotionNumber())) {
 		return false;
 	}
 
 	request = "<body posture=\"" + mPostures[postureIndex] + "\"";
 
-	for (auto& attribute : attributes)
-	{
+	for (auto& attribute : attributes) {
 		request += attribute;
 	}
 
@@ -60,8 +58,7 @@ bool SmartBodyStaticAnimation::getBmlRequest(std::string& request, int postureIn
 
 bool SmartBodyStaticAnimation::getGestureBmlRequest(std::string& request, int gestureIndex) const
 {
-	if (!mGestures)
-	{
+	if (!mGestures) {
 		return false;
 	}
 
@@ -75,8 +72,7 @@ SmartBodyGestureAnimation const* SmartBodyStaticAnimation::getGestures() const
 
 int SmartBodyStaticAnimation::getGestureMotionNumber() const
 {
-	if (!mGestures)
-	{
+	if (!mGestures) {
 		return 0;
 	}
 
@@ -110,8 +106,7 @@ float SmartBodyStaticAnimationInstance::getTimeSincePostureChange()
 
 bool SmartBodyStaticAnimationInstance::changePosture(int postureIndex)
 {
-	if (postureIndex < 0 || !(postureIndex < mReference.getMotionNumber()))
-	{
+	if (postureIndex < 0 || !(postureIndex < mReference.getMotionNumber())) {
 		return false;
 	}
 
@@ -134,15 +129,14 @@ float SmartBodyStaticAnimationInstance::getTimeSinceGestureEnd()
 bool SmartBodyStaticAnimationInstance::playGesture(int gestureIndex)
 {
 	SmartBodyGestureAnimation const* gestures = dynamic_cast<const SmartBodyStaticAnimation&>(mReference).getGestures();
-	if (!gestures || gestureIndex < 0 || !(gestureIndex < gestures->getMotionNumber()))
-	{
+	
+	if (!gestures || gestureIndex < 0 || !(gestureIndex < gestures->getMotionNumber())) {
 		return false;
 	}
 
 	float duration = gestures->getMotionDuration(gestureIndex);
 
-	if (duration < 0)
-	{
+	if (duration < 0) {
 		//If something went wrong, we return false.
 		return false;
 	}

@@ -49,8 +49,7 @@ SmartBodyRepresentation::SmartBodyRepresentation(SmartBody::SBScene& scene, cons
 	mCharacter.createStandardControllers();
 
 	//Set retargeting parameters.
-	for (int i = 0, n = behaviors.size(); i < n; i ++)
-	{
+	for (int i = 0, n = behaviors.size(); i < n; i ++) {
 		behaviors[i]->applyRetargeting(mCharacter);
 	} 
 
@@ -72,8 +71,8 @@ SmartBody::SBCharacter& SmartBodyRepresentation::createCharacter(const std::stri
 	int num = 0;
 
 	//If the name of the character has already been used, mScene.createCharacter() will return NULL.
-	while (character)
-	{
+	while (character) {
+
 		newName = name + std::to_string(num);
 		character = mScene.getCharacter(newName);
 		num ++;
@@ -84,13 +83,13 @@ SmartBody::SBCharacter& SmartBodyRepresentation::createCharacter(const std::stri
 
 void SmartBodyRepresentation::setBaseJointIndex() 
 {
-	for (int i = 0, n = mSkeleton.getNumJoints(); i < n; i++)
-	{
+	for (int i = 0, n = mSkeleton.getNumJoints(); i < n; i++) {
+
 		//We get the joint by its index. 
 		SmartBody::SBJoint *joint = mSkeleton.getJoint(i);
 
-		if (joint->getMappedJointName() == "base")
-		{
+		if (joint->getMappedJointName() == "base") {
+
 			mBaseJoint = i;	
 			return;
 		}
@@ -111,8 +110,8 @@ void SmartBodyRepresentation::setManualControl(bool mode /*= true */)
 {
 	Ogre::Skeleton::BoneIterator it = mOgreSkeleton.getBoneIterator(); 
 
-	while (it.hasMoreElements()) 
-	{ 
+	while (it.hasMoreElements()) { 
+
 		it.getNext()->setManuallyControlled(mode);
 	}
 }
@@ -120,14 +119,14 @@ void SmartBodyRepresentation::setManualControl(bool mode /*= true */)
 void SmartBodyRepresentation::updateBonePositions()
 {
 	//Each bone must be set at the same position than its reference in SmartBody.
-	for (int i = 0, n = mSkeleton.getNumJoints(); i < n; i++)
-	{
+	for (int i = 0, n = mSkeleton.getNumJoints(); i < n; i++) {
+
 		//We get the joint by its index. 
 		SmartBody::SBJoint *joint = mSkeleton.getJoint(i);
 
 		//If it exists, we get the corresponding bone by the name of the joint (which is the one in Ogre, due to the jointMap).
-		if (mOgreSkeleton.hasBone(joint->getName()))
-		{	
+		if (mOgreSkeleton.hasBone(joint->getName())) {
+
 			Ogre::Bone *bone = mOgreSkeleton.getBone(joint->getName());
 
 			//We get the position of the joint.
@@ -140,14 +139,13 @@ void SmartBodyRepresentation::updateBonePositions()
 
 			//If we are looking at the base joint, we shall not change the coordinates of the position vector (it reflects the global
 			//movement of the body, and this must be handled through Ember::Model::ModelHumanoidAttachment, not here).
-			if (i == mBaseJoint && isMoving())
-			{
-				calculateTranformations(position, quaternion);	
-				bone->setOrientation(quaternion);		
-			}
+			if (i == mBaseJoint && isMoving()) {
 
-			else
-			{
+				calculateTranformations(position, quaternion);	
+				bone->setOrientation(quaternion);	
+
+			} else {
+
 				//We update the bone positions in Ogre.
 				bone->setPosition(bone->getInitialPosition() + position);
 				bone->setOrientation(quaternion);
@@ -161,14 +159,14 @@ void SmartBodyRepresentation::calculateTranformations(const Ogre::Vector3& posit
 	Ogre::Quaternion rotation;
 	Ogre::Vector3 translation;
 
-	if (mPrvPosition.z > position.z) 
-	{
+	if (mPrvPosition.z > position.z) {
+
 		//We suppose that the movement is uniform.
 		translation = mLastTranslation;
 	}
 
-	else
-	{	
+	else {	
+
 		translation = position - mPrvPosition;
 		mLastTranslation = translation;
 	}
@@ -220,8 +218,8 @@ bool SmartBodyRepresentation::isStatic() const
 
 void SmartBodyRepresentation::setPosture(SmartBodyAnimationInstance *posture, bool staticPosture)
 {
-	if (mIsAnimatedForFirstTime)
-	{
+	if (mIsAnimatedForFirstTime) {
+
 		posture->specifyStartTime(true, 0.0f);
 		posture->specifyReadyTime(true, 0.0f);
 		mIsAnimatedForFirstTime = false;
@@ -231,8 +229,8 @@ void SmartBodyRepresentation::setPosture(SmartBodyAnimationInstance *posture, bo
 	mPosture = posture;
 
 	//If we were in Ogre skeletal animated mode, we have to set the manual control and to reinitialize the transformations.
-	if (!mIsAnimated)
-	{
+	if (!mIsAnimated) {
+
 		setManualControl();
 		reinitializeTransformation();
 		initializePrvPosition();
@@ -259,8 +257,8 @@ void SmartBodyRepresentation::addGesture(SmartBodyGestureAnimationInstance *gest
 
 void SmartBodyRepresentation::leaveAnimatedState()
 {
-	if (mIsAnimated)
-	{
+	if (mIsAnimated) {
+
 		setManualControl(false);
 		mPosture = nullptr;
 
@@ -270,8 +268,8 @@ void SmartBodyRepresentation::leaveAnimatedState()
 
 void SmartBodyRepresentation::setDirection(SmartBodyMovingAnimation::Direction direction)
 {
-	if (mIsAnimated && !mIsStatic)
-	{
+	if (mIsAnimated && !mIsStatic) {
+		
 		SmartBodyMovingAnimationInstance *animation = dynamic_cast<SmartBodyMovingAnimationInstance*>(mPosture);
 		animation->setDirection(direction);
 	}

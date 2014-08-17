@@ -61,8 +61,7 @@ SmartBodyManager::~SmartBodyManager()
 	mSimulation.stop();
 
 	//Delete all characters.
-	for (int i = 0, n = mCharacters.size(); i < n; i ++)
-	{
+	for (int i = 0, n = mCharacters.size(); i < n; i ++) {
 		delete mCharacters[i];
 	}
 
@@ -70,8 +69,7 @@ SmartBodyManager::~SmartBodyManager()
 	delete &mAnimationManager;
 
 	//Delete all behaviors.
-	for (int i = 0, n = mBehaviors.size(); i < n; i ++)
-	{
+	for (int i = 0, n = mBehaviors.size(); i < n; i ++) {
 		delete mBehaviors[i];
 	}
 
@@ -116,11 +114,11 @@ void SmartBodyManager::loadAllBehaviors()
 
 	//Gesture behavior.
 	mBehaviors.push_back(new SmartBodyGestures(EMBER_SMARTBODY_ASSETS_GESTURES, EMBER_SMARTBODY_SKELETON_GESTURES, 
-		mAssetManager, *mScene.getBlendManager(), *mScene.getRetargetManager(), *mScene.getGestureMapManager()));
+		mAssetManager, *mScene.getRetargetManager(), *mScene.getGestureMapManager()));
 	
 	//Setup all behaviors.
-	for (auto& behavior : mBehaviors)
-	{
+	for (auto& behavior : mBehaviors) {
+
 		behavior->setup(*mScene.getJointMapManager());
 	}
 }
@@ -132,22 +130,20 @@ void SmartBodyManager::loadSkeletonAssets()
 
 	//For all the loaded assets, try to get the bone mapping.
 	std::vector<std::string> skeletonNames = mAssetManager.getSkeletonNames();
-	for (auto& skeletonName : skeletonNames)
-	{
+	for (auto& skeletonName : skeletonNames) {
+
 		//It must concern an Ogre skeleton.
-		if (skeletonName.substr(skeletonName.rfind('.'), 4) == ".xml")
-		{
+		if (skeletonName.substr(skeletonName.rfind('.'), 4) == ".xml") {
+
 			//If it exists, then try to get the bone mapping.
 			SmartBodySkeletonMap map(skeletonName);
-			if (map.exists())
-			{
+			if (map.exists()) {
 				//Finally, map the skeleton.
 				map.setMap(mAssetManager, *mScene.getJointMapManager());
 			}
 
 			//When the skeleton has been loaded, retarget the behaviors on it.
-			for (auto& behavior : mBehaviors)
-			{
+			for (auto& behavior : mBehaviors) {
 				behavior->retarget(skeletonName);
 			}
 		}
@@ -158,8 +154,9 @@ void SmartBodyManager::loadSkeletonAssets()
 bool SmartBodyManager::setCorrespondingSkeletonName(std::string& sbName, const std::string& ogreName)
 {
 	size_t lastSlash = ogreName.rfind('/');
-	if (lastSlash + 1 >= ogreName.size())
+	if (lastSlash + 1 >= ogreName.size()) {
 		return false;
+	}
 
  	sbName = ogreName.substr(lastSlash + 1) + std::string(EMBER_SMARTBODY_SKELETON_EXTENSION);	
  	return true;
@@ -170,8 +167,7 @@ bool SmartBodyManager::hasSkeleton(const std::string& skName)
 {
 	assert(mIsInit);
 
-	if (mAssetManager.getSkeleton(skName))
-	{
+	if (mAssetManager.getSkeleton(skName)) {
 		return true;
 	}
 
@@ -198,10 +194,9 @@ void SmartBodyManager::removeCharacter(SmartBodyRepresentation *representation)
 	assert(mIsInit);
 
 	//Find the representation in mCharacters and remove it.
-	for (int i = 0, n = mCharacters.size(); i < n; i ++)
-	{
-		if (mCharacters[i] == representation)
-		{
+	for (int i = 0, n = mCharacters.size(); i < n; i ++) {
+
+		if (mCharacters[i] == representation) {
 			mCharacters.erase(mCharacters.begin() + i);
 		}
 	}
@@ -219,10 +214,10 @@ void SmartBodyManager::updateAnimations(double timeSlice)
 	mScene.update();
 
 	//For each character that is animated through SmartBody, set the new bone positions.
-	for (int i = 0, n = mCharacters.size(); i < n; i ++)
-	{
-		if (mCharacters[i]->isAnimated())
-		{
+	for (int i = 0, n = mCharacters.size(); i < n; i ++) {
+
+		if (mCharacters[i]->isAnimated()) {
+			
 			mAnimationManager.updateAnimations(*mCharacters[i], (float)timeSlice);
 			mCharacters[i]->updateBonePositions();
 		}

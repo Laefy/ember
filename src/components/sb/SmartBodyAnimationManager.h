@@ -40,6 +40,16 @@ class SmartBodyStaticAnimation;
 class SmartBodyMovingAnimation;
 class SmartBodyGestureAnimation;
 
+/**
+ * @brief Gives an interface between the name of an animation and its execution on a character.
+ *
+ * The first role of this manager is to create, initialize, store, and then free the different possible SmartBodyAnimation.
+ * Apart from this, when an animation is requested on a character, the SmartBodyAnimationManager takes care of creating the corresponding AnimationInstance and associates it with the character (deletes 
+ * if needed the previous AnimationInstances that are bound to him).
+ * Finally, it updates the different instances, and if new bml requests must be sent to SmartBody, it asks the AnimationInstance to do so.
+ *
+ * @author Céline NOEL <celine.noel.7294@gmail.com>
+ */
 class SmartBodyAnimationManager
 {
 public:
@@ -72,8 +82,7 @@ public:
 	void removeAllAnimations(SmartBodyRepresentation& character) const;
 
 	/**
-	 * If necessary, resend a request to SmartBody to match the changes operating into each kind of AnimationInstance the 
-	 * character has.
+	 * @brief If necessary, resend a request to SmartBody to match the changes operating into each AnimationInstance bound to the character.
 	 */
 	void updateAnimations(SmartBodyRepresentation& character, float timeSlice);
 
@@ -81,12 +90,12 @@ public:
 private:
 
 	/**
-	 * @brief The bml processor can send requests that lauches animation on characters.
+	 * @brief The bml processor can send requests that launches animation on characters.
 	 */
 	SmartBody::SBBmlProcessor& mBmlProcessor;
 
 	/**
-	 * @brief Maps a Animation::Name to the adress of the corresponding animation.
+	 * @brief Maps a Animation::Name to the address of the corresponding animation.
 	 */
 	std::map<SmartBodyAnimation::Name, SmartBodyAnimation*> mAnimations;
 
@@ -107,12 +116,12 @@ private:
 	void updateIntuitiveAnimation(SmartBodyRepresentation& character, float timeSlice) const;
 
 	/**
-	 * @brief Removes the character's posture animation and free the memory.
+	 * @brief Retrieves the character's posture animation and deletes it.
 	 */
 	void freePosture(SmartBodyRepresentation& character) const;
 
 	/**
-	 * @brief Deletes the animation instance and (TODO) clear the bml instruction sent to the bml processor.
+	 * @brief Deletes an animation instance.
 	 */
 	void freeAnimationInstance(SmartBodyAnimationInstance* animation) const;
 

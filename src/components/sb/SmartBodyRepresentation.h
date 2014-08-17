@@ -49,6 +49,7 @@ class SmartBodyIntuitiveAnimationInstance;
 
 /**
  * @brief This class gives an interface between SmartBody and Ogre respective representation for characters.
+ * Its role is to transfer the position of the bones in SmartBody in the Ogre skeleton, and the position of the scene node which it is linked to.
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  *
@@ -125,19 +126,19 @@ public:
 
 	/**
 	 * @brief Sets a new posture for this character.
-	 * @param staticPosture: true if posture refers to a SmartBodyStaticAnimation, false if it is to a SmartBodyMovingAnimation.
+	 * @param staticPosture: true if posture refers to a SmartBodyStaticAnimation, false if it is to a SmartBodyMovingAnimation / SmartBodyIntuitiveAnimation.
 	 * @return A pointer to the previous posture (needs to be destroyed).
 	 * Called by the SmartBodyAnimationManager.
 	 *
-	 * In static mode: the posture is updated randomly by the SmartBodyAnimationManager. The character then changes his position to
-	 * give a more natural effect.
+	 * In static mode: the posture is updated randomly by the SmartBodyAnimationManager. The character then changes his position to give a more natural effect.
 	 *
-	 * In moving mode: the character can use four (actually, only three as we don't have backward moving motions yet) different motions
-	 * depending on the orientation of the character when moving (~direction). To change from one to another, use setDirection() on this
-	 * representation.
+	 * In moving mode: the character can use four (actually, only three as we don't have backward moving motions yet) different motions depending on the orientation of the character when moving 
+	 * (~direction). To change from one to another, use setDirection() on this representation.
+	 * 
+	 * In intuitive mode: we use the character's movements on the server to set the parameters of a blend, that will consequently decide what the appropriate animation is to shift the character
+	 * from a position to another.
 	 */
 	void setPosture(SmartBodyAnimationInstance *posture, bool staticPosture);
-
 	void setIntuitivePosture(SmartBodyIntuitiveAnimationInstance *posture);
 
 	/**

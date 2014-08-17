@@ -26,8 +26,8 @@ namespace Ember
 
 SmartBodyAnimation::Type SmartBodyAnimation::getType(Name animationName)
 {
-	switch (animationName)
-	{
+	switch (animationName) {
+
 		case Name::WALKING:
 		case Name::RUNNING:
 			return Type::MOVING;
@@ -63,15 +63,15 @@ SmartBodyAnimation::Name SmartBodyAnimation::getName() const
 
 float SmartBodyAnimation::getMotionDuration(int motionIndex) const
 {
-	if (motionIndex < 0 || !(motionIndex < getMotionNumber()))
-	{
+	if (motionIndex < 0 || !(motionIndex < getMotionNumber())) {
+
 		return -1;
 	}
 
 	SmartBody::SBMotion *motion = mAssetManager.getMotion(mMotionNames[motionIndex]);
 
-	if (!motion)
-	{
+	if (!motion) {
+
 		return -1;
 	}
 
@@ -92,10 +92,11 @@ SmartBodyAnimationInstance::SmartBodyAnimationInstance(const SmartBodyAnimation&
 
 SmartBodyAnimationInstance::~SmartBodyAnimationInstance()
 {
-	if (mLastRequestId != "")
-	{
-		mBmlProcessor.interruptBML(mCharacter, mLastRequestId, 0);
-	}
+}
+
+const SmartBodyAnimation& SmartBodyAnimationInstance::getReference() const
+{
+	return mReference;
 }
 
 int SmartBodyAnimationInstance::getMotionNumber() const
@@ -103,16 +104,10 @@ int SmartBodyAnimationInstance::getMotionNumber() const
 	return mReference.getMotionNumber();
 }
 
-void SmartBodyAnimationInstance::notifyUpdate()
-{
-	specifyReadyTime(false);
-	specifyStartTime(false);
-}
-
 void SmartBodyAnimationInstance::specifyStartTime(bool specify, float startTime /*= 0.0f*/)
 {
-	if (specify)
-	{
+	if (specify) {
+
 		mStartTime = startTime;
 	}
 
@@ -121,32 +116,12 @@ void SmartBodyAnimationInstance::specifyStartTime(bool specify, float startTime 
 
 void SmartBodyAnimationInstance::specifyReadyTime(bool specify, float readyTime /*= 0.0f*/)
 {
-	if (specify)
-	{
+	if (specify) {
+
 		mReadyTime = readyTime;
 	}
 
 	mHasReadyTime = specify;
-}
-
-void SmartBodyAnimationInstance::convertTimesToBmlStrings(std::vector<std::string>& times) const
-{
-	times.clear();
-
-	if (mHasStartTime)
-	{
-		times.push_back(" start=\"" + std::to_string(mStartTime) + "\" ");
-
-		if (mHasReadyTime)
-		{
-			times.push_back(" ready=\"" + std::to_string(mStartTime + mReadyTime) + "\" ");
-		}
-	}
-}
-
-const SmartBodyAnimation& SmartBodyAnimationInstance::getReference() const
-{
-	return mReference;
 }
 
 void SmartBodyAnimationInstance::execute(const std::string& characterName)
@@ -157,6 +132,29 @@ void SmartBodyAnimationInstance::execute(const std::string& characterName)
 
  	//Notify the animation instance that the request has been sent.
  	notifyUpdate();
+}
+
+void SmartBodyAnimationInstance::convertTimesToBmlStrings(std::vector<std::string>& times) const
+{
+	//In case the vector is not empty.
+	times.clear();
+
+	if (mHasStartTime) {
+
+		times.push_back(" start=\"" + std::to_string(mStartTime) + "\" ");
+
+		if (mHasReadyTime) {
+			
+			times.push_back(" ready=\"" + std::to_string(mStartTime + mReadyTime) + "\" ");
+		}
+	}
+}
+
+void SmartBodyAnimationInstance::notifyUpdate()
+{
+	//As soon as the new motion is launched, we need to reinitialize mStartTime and mReadyTime.
+	specifyReadyTime(false);
+	specifyStartTime(false);
 }
 
 }

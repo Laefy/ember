@@ -30,7 +30,8 @@ namespace Ember
 {
 
 /**
- * @brief This class is used instead of SmartBodyMovingAnimation and uses blends to replace the SmartBody motions.
+ * @brief This class is used instead of SmartBodyMovingAnimation and uses the blends created while setting the locomotion behavior up to replace the SmartBody motions.
+ * This technique relies on parameters such as the speed of the character, if he is turning (and how much), etc. These are calculated using the position of the character on the server.
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  *
@@ -48,7 +49,7 @@ public:
 		LOCOMOTION,  						//3D blend: the three parameters are speed, angular speed, angle between the forward axis and the displacement axis.
 		STARTING_LEFT, STARTING_RIGHT, 		//1D blend: the parameter is the angle.
 		IDLE_TURN,							//1D blend: the parameter is the angle.
-		STEP,								//2D blend.
+		STEP,								//2D blend: the parameters are the transitions of the joint (?).
 
 		BLENDS_COUNT, 	//The total number of blends (used to set the size of mBlends).
 	};
@@ -103,7 +104,9 @@ private:
 };
 
 /**
- * @brief This is an instance for SmartBodyIntuitiveAnimation. 
+ * @brief This is an instance for SmartBodyIntuitiveAnimation.
+ * It contains the name of the current blend, the values of the parameters. In order to sets them, it also stores the position and orientation of the character during the last frame, and the ones for
+ * the new frame.
  *
  * @author Céline NOEL <celine.noel.7294@gmail.com>
  */
@@ -138,7 +141,7 @@ public:
 	void setBlendParameters(int nbParameters, float x = 0, float y = 0, float z = 0);
 
 	/**
-	 * @brief Gets the blend currently set on the character.
+	 * @brief Gets the blend currently used in this instance.
 	 */
 	SmartBodyIntuitiveAnimation::Blend getBlend() const;
 
@@ -149,14 +152,12 @@ public:
 	void notifyUpdate();
 
 	/**
-	 * @brief Initializes mPrvPosition and mPrvOrientation with position and orientation vectors.
+	 * @brief Initializes mPrvPosition and mPrvOrientation to position and orientation vectors.
 	 */
 	void initializePositionAndOrientation(const Ogre::Vector3& position, const Ogre::Quaternion& orientation);
 
 	/**
 	 * @brief Sets mNewPosition and mNewOrientation to the given values.
-	 * @param setInitial: If setInitial is true, then mPrvPosition and mPrvOrientation will be updated too.
-	 *
 	 * The position and orientation that the character has on the server are required to calculate the parameters of the blend.
 	 */
 	void setServerPositionAndOrientation(const Ogre::Vector3& position, const Ogre::Quaternion& orientation);
