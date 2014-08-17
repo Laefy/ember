@@ -27,6 +27,7 @@
 #include "sb/SBScene.h"
 #include "sb/SBCharacter.h"
 #include "sb/SBSkeleton.h"
+#include "sb/SBBmlProcessor.h"
 #include "sr/sr_quat.h"
 
 #include <OgreSkeletonInstance.h>
@@ -61,6 +62,7 @@ SmartBodyRepresentation::~SmartBodyRepresentation()
 {
 	//Free the memory.
 	delete mPosture;
+	mScene.getBmlProcessor()->interruptCharacter(getName(), 0);
 	mScene.removeCharacter(getName());
 }
 

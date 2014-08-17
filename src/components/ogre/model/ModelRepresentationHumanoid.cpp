@@ -152,16 +152,14 @@ void ModelRepresentationHumanoid::setAnimation(const std::string& actionName, Ac
 				resetAnimations();
 
 				//start the walking animation on this character.
-				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::LOCOMOTION);
-			//	mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::WALKING);
+				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::WALKING);
 
 			} else if (actionName == ACTION_RUN) {
 
 				resetAnimations();
 
 				//start the walking animation on this character.
-				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::LOCOMOTION);
-			//	mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::RUNNING);
+				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::RUNNING);
 
 			} else {
 

@@ -59,10 +59,9 @@ void ModelHumanoidAttachment::setPosition(const WFMath::Point<3>& position, cons
 		mSrvPosition = mPrvPosition;
 		mSrvOrientation = mPrvOrientation; 
 
-		representation.updateServerPositionAndOrientation(mPrvPosition, mPrvOrientation);
-
 	} else {
 
+#if 0
 		WFMath::Point<3> newPosition;
 		WFMath::Quaternion newOrientation;
 		WFMath::Vector<3> newVelocity;
@@ -111,7 +110,17 @@ void ModelHumanoidAttachment::setPosition(const WFMath::Point<3>& position, cons
 
 		//We reinitialize the values of the tranformations, to not reapply them the next time we set the position of the node.
 		representation.reinitializeTransformation();
+#else
+		ModelAttachment::setPosition(position, orientation, velocity);
+		mPrvPosition = Convert::toOgre(position);
+		mPrvOrientation = Convert::toOgre(orientation); 
+		mSrvPosition = mPrvPosition;
+		mSrvOrientation = mPrvOrientation; 
+
+#endif
 	}
+	
+	representation.updateServerPositionAndOrientation(Convert::toOgre(position), Convert::toOgre(orientation));
 }
 
 void ModelHumanoidAttachment::calculateAdjustments(Ogre::Vector3& newPosition, const Ogre::Vector3& sbTranslation, const Ogre::Vector3& srvPosition, const Ogre::Quaternion& srvOrientation, bool isStatic) const
