@@ -48,8 +48,7 @@ ModelRepresentationHumanoid::ModelRepresentationHumanoid(EmberEntity& entity, Mo
 
 ModelRepresentationHumanoid::~ModelRepresentationHumanoid()
 {
-	if (mCharacter)
-	{
+	if (mCharacter) {
 		//Destroy the SBCharacter.
 		mSbManager.removeCharacter(mCharacter);
 	}
@@ -116,14 +115,12 @@ void ModelRepresentationHumanoid::createSmartBodyCharacter()
 	mSbManager.setCorrespondingSkeletonName(sbSkName, skeleton->getName());
 
 	//If the skeleton exists for SmartBody, then create the corresponding character.
-	if (mSbManager.hasSkeleton(sbSkName))
-	{
+	if (mSbManager.hasSkeleton(sbSkName)) {
+
 		//Create the model representation set for SmartBody humanoid character.
 		mCharacter = mSbManager.createCharacter(*mModel.getSkeletonOwnerEntity(), mModel.getDefinition()->getName(), sbSkName);
-	}
 
-	else
-	{
+	} else 	{
 		//TODO: Do something to say that there is an error, and if possible change the ModelRepresentationHumanoid to a normal ModelRepresentation.
 	}
 }
@@ -135,65 +132,59 @@ void ModelRepresentationHumanoid::setIdleAnimationTime()
 
 void ModelRepresentationHumanoid::setAnimation(const std::string& actionName, Action *newAction)
 {
-	if (mCharacter)
-	{
-		if (newAction)
-		{
+	if (mCharacter) {
+
+		if (newAction) {
+
 			//Remove this from the Ogre Animated entities.
 			MotionManager::getSingleton().removeAnimated(mEntity.getId());
 
 			//If the action is supported by SmartBody,
-			if (actionName == ACTION_STAND)
-			{
+			if (actionName == ACTION_STAND) {
+
 				resetAnimations();
 
 				//start the idling animation on this character.
 				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::STANDING);
-			}
 
-			else if (actionName == ACTION_WALK)
-			{
+			} else if (actionName == ACTION_WALK) {
+
 				resetAnimations();
 
 				//start the walking animation on this character.
 				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::LOCOMOTION);
 			//	mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::WALKING);
-			}
 
-			else if (actionName == ACTION_RUN)
-			{
+			} else if (actionName == ACTION_RUN) {
+
 				resetAnimations();
 
 				//start the walking animation on this character.
 				mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::LOCOMOTION);
 			//	mSbManager.animate(*mCharacter, SmartBodyAnimation::Name::RUNNING);
-			}
 
-			//Else, stop the SmartBody animations for this character and use the original method.
-			else
-			{
+			} else {
+
+				//Else, stop the SmartBody animations for this character and use the original method.
 				mSbManager.freeze(*mCharacter);
 				ModelRepresentation::setAnimation(actionName, newAction);
 			}
-		}
 
-		else
-		{
+		} else {
+
 			mSbManager.freeze(*mCharacter);
 			ModelRepresentation::setAnimation(actionName, newAction);
 		}
-	}
 
-	else
-	{
+	} else {
+
 		ModelRepresentation::setAnimation(actionName, newAction);
 	}
 }
 
 void ModelRepresentationHumanoid::updateServerPositionAndOrientation(const Ogre::Vector3& position, const Ogre::Quaternion& orientation)
 {
-	if (mCharacter)
-	{
+	if (mCharacter) {
 		mCharacter->setPositionAndOrientation(position, orientation);
 	}
 }

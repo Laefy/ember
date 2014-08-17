@@ -51,8 +51,8 @@ void ModelHumanoidAttachment::setPosition(const WFMath::Point<3>& position, cons
 	ModelRepresentationHumanoid& representation = dynamic_cast<ModelRepresentationHumanoid&>(mModelRepresentation);
 
 	//If the model is animated through Ogre skeletal animations, we have to use the parent method.
-	if (mIgnoreEntityData || representation.isOgreAnimated())
-	{	
+	if (mIgnoreEntityData || representation.isOgreAnimated()) {	
+
 		ModelAttachment::setPosition(position, orientation, velocity);
 		mPrvPosition = Convert::toOgre(position);
 		mPrvOrientation = Convert::toOgre(orientation); 
@@ -60,10 +60,9 @@ void ModelHumanoidAttachment::setPosition(const WFMath::Point<3>& position, cons
 		mSrvOrientation = mPrvOrientation; 
 
 		representation.updateServerPositionAndOrientation(mPrvPosition, mPrvOrientation);
-	}
 
-	else
-	{
+	} else {
+
 		WFMath::Point<3> newPosition;
 		WFMath::Quaternion newOrientation;
 		WFMath::Vector<3> newVelocity;
@@ -72,8 +71,7 @@ void ModelHumanoidAttachment::setPosition(const WFMath::Point<3>& position, cons
 		Ogre::Quaternion srvOrientation(Convert::toOgre(orientation));
 
 		//If the character is in a static posture, we have to use the previous orientation value (because it seems that the new one is set a bit randomly).
-		if (representation.isStatic())
-		{
+		if (representation.isStatic()) {
 			srvOrientation = mSrvOrientation;
 		}
 
@@ -128,18 +126,16 @@ void ModelHumanoidAttachment::calculateAdjustments(Ogre::Vector3& newPosition, c
  	Ogre::Vector3 distance = newPosition - tgtPosition;
 	double length = distance.length();
 
-	if (isStatic && length > 0.0001)
-	{
-		newPosition = newPosition - distance * (0.0001 / length);
-	}
+	if (isStatic && length > 0.0001) {
 
-	else if ((tgtPosition - mPrvPosition).dotProduct(sbTranslation) <= 0)
-	{
+		newPosition = newPosition - distance * (0.0001 / length);
+
+	} else if ((tgtPosition - mPrvPosition).dotProduct(sbTranslation) <= 0) {
+
 		newPosition = mPrvPosition + sbTranslation * 0.2;
-	}
-	
-	else
-	{
+
+	} else {
+		
 		newPosition = tgtPosition + distance * (0.999 - 0.3 * exp(-length * 2));
 	}
 }
