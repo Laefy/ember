@@ -23,6 +23,7 @@
  
 	#include <string>
 	#include <vector>
+ 	#include <list>
 	#include <OgreVector3.h>
 	#include <OgreQuaternion.h>
 
@@ -91,29 +92,6 @@ public:
 	void updateBonePositions();
 
 	/**
-	 * @brief Returns true if the ModelHumanoidAttachment can use the values of translation and rotation.
-	 */
-	bool isTransformationInitialized() const;
-
-	/**
-	 * @brief Gets the translation of the base joint since the since the last time the node this representation is attached to has 
-	 * been updated.
-	 * @return mTranslation.
-	 */
-	const Ogre::Vector3& getTranslation() const;
-
-	/**
-	 * @brief Returns the rotation that must be applied on the character.
-	 * @return mRotation.
-	 */	
-	const Ogre::Quaternion& getRotation() const;
-
-	/**
-	 * @brief Reinitialize mTranslation and mRotation to identity, and sets mIsTransformationInit to true.
-	 */	
-	void reinitializeTransformation();
-
-	/**
 	 * @brief Allows to know if the character is moving (globally, like walking, running, not idling nor noding for example), to eventually
 	 * update or not the position of the scene node.
 	 */
@@ -173,10 +151,16 @@ public:
 	void setPositionAndOrientation(const Ogre::Vector3& position, const Ogre::Quaternion& orientation);
 
 	/**
-	 * @brief Gets the character's position or orientation.
+	 * @brief Gets the character's position or orientation, in the server.
 	 */
 	const Ogre::Vector3& getWorldPosition() const;
 	const Ogre::Quaternion& getWorldOrientation() const;
+
+	/**
+	 * @brief Gets the real character's position or orientation.
+	 */
+	const Ogre::Vector3& getActualPosition() const;
+	const Ogre::Quaternion& getActualOrientation() const;
 
 
 private:
@@ -259,6 +243,11 @@ private:
 	void calculateTranformations(const Ogre::Vector3& position, const Ogre::Quaternion& orientation);
 
 	/**
+	 * @brief Reinitialize mTranslation and mRotation to identity.
+	 */	
+	void reinitializeTransformation();
+
+	/**
 	 * @brief Initializes mPrvPosition to the position of the base joint. 
 	 * This must be done everytime we toggle from Ogre skeletal animated mode to SmartBody one.
 	 */
@@ -289,6 +278,19 @@ private:
 	 */
 	Ogre::Vector3 mWorldPosition;
 	Ogre::Quaternion mWorldOrientation;
+
+	/**
+	 * @brief All the positions that the character has reached on the server but still not on the client. It draws a path that the character has to follow. Ideally, when he stopped, he should be
+	 * reaching the last position of the list.
+	 */
+	std::list<Ogre::Vector3> mWorldPositions;
+	std::list<Ogre::Quaternion> mWorldOrientations;
+
+	/**
+	 * @brief The current position of the character on the client. It is "calculated" in setPositionAndOrientation().
+	 */
+	Ogre::Vector3 mActualPosition;
+	Ogre::Quaternion mActualOrientation;
 };
 
 }

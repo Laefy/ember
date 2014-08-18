@@ -70,21 +70,6 @@ const std::string& ModelRepresentationHumanoid::getTypeNameForClass()
 	return sTypeName;
 }
 
-const Ogre::Vector3& ModelRepresentationHumanoid::getTranslation() const
-{
-	return mCharacter->getTranslation();
-}
-
-const Ogre::Quaternion& ModelRepresentationHumanoid::getRotation() const
-{
-	return mCharacter->getRotation();
-}
-
-void ModelRepresentationHumanoid::reinitializeTransformation()
-{
-	mCharacter->reinitializeTransformation();
-}
-
 bool ModelRepresentationHumanoid::isOgreAnimated() const
 {
 	if (mCharacter)
@@ -185,6 +170,16 @@ void ModelRepresentationHumanoid::updateServerPositionAndOrientation(const Ogre:
 	if (mCharacter) {
 		mCharacter->setPositionAndOrientation(position, orientation);
 	}
+}
+
+const Ogre::Vector3& ModelRepresentationHumanoid::getActualPosition()
+{
+	return mCharacter->getActualPosition();
+}
+
+const Ogre::Quaternion& ModelRepresentationHumanoid::getActualOrientation()
+{
+	return mCharacter->getActualOrientation();
 }
 
 }

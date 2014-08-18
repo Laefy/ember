@@ -62,6 +62,7 @@ SmartBodyRepresentation::~SmartBodyRepresentation()
 {
 	//Free the memory.
 	delete mPosture;
+	//TODO: put this in the AnimationManager.
 	mScene.getBmlProcessor()->interruptCharacter(getName(), 0);
 	mScene.removeCharacter(getName());
 }
@@ -169,7 +170,7 @@ void SmartBodyRepresentation::calculateTranformations(const Ogre::Vector3& posit
 
 	else {	
 
-		translation = position - mPrvPosition;
+		translation = (position - mPrvPosition) * 1.5f;
 		mLastTranslation = translation;
 	}
 
@@ -183,16 +184,6 @@ void SmartBodyRepresentation::calculateTranformations(const Ogre::Vector3& posit
 
 	//If the translation is nul, then we can consider that the representation stopped moving.
 	mIsInMovement = translation == Ogre::Vector3(0, 0, 0) ? false : true;
-}
-
-const Ogre::Vector3& SmartBodyRepresentation::getTranslation() const
-{
-	return mTranslation;
-}
-
-const Ogre::Quaternion& SmartBodyRepresentation::getRotation() const
-{
-	return mRotation;
 }
 
 void SmartBodyRepresentation::reinitializeTransformation()
@@ -279,8 +270,68 @@ void SmartBodyRepresentation::setDirection(SmartBodyMovingAnimation::Direction d
 
 void SmartBodyRepresentation::setPositionAndOrientation(const Ogre::Vector3& position, const Ogre::Quaternion& orientation)
 {
-	mWorldPosition = position;
-	mWorldOrientation = orientation;
+	if (mWorldPositions.size() == 0) {
+	//If mWorldPositions is empty, then it has never been initialized, and we must do that.
+
+		mActualPosition = position;
+		mActualOrientation = orientation;
+
+		mWorldPositions.push_back(position);
+		mWorldOrientations.push_back(orientation);
+
+		mWorldPosition = mWorldPositions.back();
+		mWorldOrientation = mWorldOrientations.back();
+
+	} else if (mWorldPosition != position) {
+	//We only add the new position / orientation if the position is different from the last one.
+
+		mWorldPositions.push_back(position);
+		mWorldOrientations.push_back(orientation);
+
+		mWorldPosition = mWorldPositions.back();
+		mWorldOrientation = mWorldOrientations.back();
+	}
+
+	//We do not consider the altitude parameter.
+	Ogre::Vector3 translation(mTranslation.x, 0, mTranslation.z); 
+
+	while (mWorldPositions.size() > 1) {
+	//If the list contains less than two elements, we have nothing to do (the first element always correspond to mActualPosition).
+
+		float length = translation.length();
+		Ogre::Vector3 first = mWorldPositions.front();
+		mWorldPositions.pop_front();
+
+		Ogre::Vector3 step(*mWorldPositions.begin() - first);
+		float dist =  Ogre::Vector3(step.x, step.y, 0).length();
+
+		if (length < dist) {
+		//We are on the first segment of the path. We move the character on it as far as the length of translation.
+
+			mActualPosition = mActualPosition + (*mWorldPositions.begin() - first) * length / dist;
+			mWorldPositions.push_front(mActualPosition);
+			break;
+
+		} else {
+
+			mWorldOrientations.pop_front();
+			mActualPosition = *mWorldPositions.begin();
+			mActualOrientation = *mWorldOrientations.begin();
+			
+			if (length == dist) {
+				break;
+
+			} else {
+			//The character should be positioned on a segment further than the first one of mWorldPositions. We reduced the length of translation from the length of the first segment.
+				translation = translation - translation * dist / length;
+			}
+		}
+	}
+
+
+	std::cout << std::endl;
+
+	reinitializeTransformation();
 }
 
 const Ogre::Vector3& SmartBodyRepresentation::getWorldPosition() const
@@ -293,5 +344,14 @@ const Ogre::Quaternion& SmartBodyRepresentation::getWorldOrientation() const
 	return mWorldOrientation;
 }
 
+const Ogre::Vector3& SmartBodyRepresentation::getActualPosition() const
+{
+	return mActualPosition;
+}
+
+const Ogre::Quaternion& SmartBodyRepresentation::getActualOrientation() const
+{
+	return mActualOrientation;
+}
 
 }

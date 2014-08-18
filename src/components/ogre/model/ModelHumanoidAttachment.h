@@ -70,27 +70,6 @@ public:
 	 * the walking animation does not interrupt abruptly).
 	 */
 	bool isEntityMoving() const;
-
-private:
-
-	/**
-	 * @brief Adjusts the position that the character should have to match SmartBody motions, in order to stay close to the server coordinates.
-	 * @return The new translation.
-	 */
-	void calculateAdjustments(Ogre::Vector3& newPosition, const Ogre::Vector3& sbTranslation, const Ogre::Vector3& srvPosition, const Ogre::Quaternion& srvOrientation, bool isStatic) const;
-
-	/** 
-	 * @brief The last position and orientation entered.
-	 */
-	Ogre::Vector3 mPrvPosition;
-	Ogre::Quaternion mPrvOrientation;
-
-	/**
-	 * @brief The last position and orientation requested by the server. This helps to know if we should use the data of the server without taking account
-	 * of the ones in SmartBody.
-	 */
-	Ogre::Vector3 mSrvPosition;
-	Ogre::Quaternion mSrvOrientation;
 };
 
 }

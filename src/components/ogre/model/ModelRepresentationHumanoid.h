@@ -75,23 +75,7 @@ public:
 	 * @return false if the model is animated manually with SmartBody, true otherwise.
 	 */
 	bool isOgreAnimated() const;
-
-	/**
-	 * @brief Gets the global translation value of the model since the last frame.
-	 */
-	const Ogre::Vector3& getTranslation() const;
-
-	/**
-	 * @brief Gets the rotation applied on the model relatively to (1, 0, 0, 0) quaternion.
-	 */
-	const Ogre::Quaternion& getRotation() const;
-
-	/**
-	 * @brief Reinitialize the transformation values of mCharacter (this must be done after the scene node has been positionned, not to 
-	 * count the same translation, or rotation twice).
-	 */	
-	void reinitializeTransformation();
-
+	
 	/**
 	 * @brief States that the character is moving, to know if we need to update the position of the scene node (for example, if the
 	 * character is in the idling posture, the position should not be updated, but in the case of a humanoid character, the translation 
@@ -108,6 +92,12 @@ public:
 	 * @brief Sets the position and orientation of the character in the world (updates mCharacter). 
 	 */
 	void updateServerPositionAndOrientation(const Ogre::Vector3& position, const Ogre::Quaternion& orientation);
+
+	/**
+	 * @brief Returns the position and orientation that the character would reasonably have taking in account the server data and SmartBody movements.
+	 */
+	const Ogre::Vector3& getActualPosition();
+	const Ogre::Quaternion& getActualOrientation();
 	
 
 protected:
